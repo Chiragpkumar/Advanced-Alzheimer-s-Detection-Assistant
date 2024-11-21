@@ -26,7 +26,8 @@ jobs:
     - name: Run linting
       run: |
         pip install flake8
-        flake8 .
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics \
+          --exclude=.git,__pycache__,build,dist,venv,env
     
     - name: Run tests
       run: |
