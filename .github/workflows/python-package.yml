@@ -3,43 +3,22 @@
 
 name: Python Package CI
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.9", "3.10", "3.11"]
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-    - name: Lint with flake8
-      run: |
-        # Stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Optional: Treat warnings as errors by removing the --exit-zero flag
-        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics
-
-    - name: Run tests with pytest
-      run: |
-        pytest
-
+{True: {'pull_request': {'branches': ['main']},
+        'push': {'branches': ['main']}},
+ 'jobs': {'build': {'runs-on': 'ubuntu-latest',
+                    'steps': [{'name': 'Checkout code',
+                               'uses': 'actions/checkout@v3'},
+                              {'name': 'Set up Python ${{ matrix.python-version }}',
+                               'uses': 'actions/setup-python@v3',
+                               'with': {'python-version': '${{ matrix.python-version }}'}},
+                              {'name': 'Install dependencies',
+                               'run': 'python -m pip install --upgrade pip\npython -m pip install flake8 pytest\nif [ -f requirements.txt ]; then pip install -r requirements.txt; fi\n'},
+                              {'name': 'Lint with flake8',
+                               'run': '# Stop the build if there are Python syntax errors or undefined names\nflake8 . --count --select=E9,F63,F7,F82 --show-source --statistics\n# Optional: Treat warnings as errors by removing the --exit-zero flag\nflake8 . --count --max-complexity=10 --max-line-length=127 --statistics\n'},
+                              {'name': 'Run tests with pytest',
+                               'run': 'pytest'}],
+                    'strategy': {'fail-fast': False,
+                                 'matrix': {'python-version': ['3.9',
+                                                               '3.10',
+                                                               '3.11']}}}},
+ 'name': 'Python Package CI'}
